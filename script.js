@@ -10,39 +10,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Validação do Formulário de Cadastro
+    // Validação dos formulários de cadastro e edição
     const formCadastro = document.getElementById('form-cadastro');
     if (formCadastro) {
-        formCadastro.addEventListener('submit', (event) => {
-            let valido = true;
+        // Mostra (ou limpa) a mensagem de erro de um campo
+        const mostrarErro = (campo, spanErro, mensagem) => {
+            if (spanErro) spanErro.textContent = mensagem;
+            if (campo) campo.classList.toggle('input-invalido', mensagem !== '');
+            return mensagem === '';
+        };
 
+        formCadastro.addEventListener('submit', (event) => {
             const tituloInput = document.getElementById('titulo');
             const prioridadeSelect = document.getElementById('prioridade');
+            const prazoInput = document.getElementById('prazo');
 
-            const erroTitulo = document.getElementById('erro-titulo');
-            const erroPrioridade = document.getElementById('erro-prioridade');
+            const tituloOk = mostrarErro(tituloInput, document.getElementById('erro-titulo'),
+                tituloInput.value.trim() ? '' : 'O título é obrigatório.');
+            const prioridadeOk = mostrarErro(prioridadeSelect, document.getElementById('erro-prioridade'),
+                prioridadeSelect.value ? '' : 'Selecione uma prioridade.');
+            const prazoOk = mostrarErro(prazoInput, document.getElementById('erro-prazo'),
+                prazoInput.value ? '' : 'Informe o prazo da tarefa.');
 
-            // Limpa erros anteriores
-            erroTitulo.textContent = '';
-            erroPrioridade.textContent = '';
-            tituloInput.classList.remove('input-invalido');
-            prioridadeSelect.classList.remove('input-invalido');
-
-            // Valida Título
-            if (!tituloInput.value.trim()) {
-                erroTitulo.textContent = 'O título é obrigatório.';
-                tituloInput.classList.add('input-invalido');
-                valido = false;
-            }
-
-            // Valida Prioridade
-            if (!prioridadeSelect.value) {
-                erroPrioridade.textContent = 'Selecione uma prioridade.';
-                prioridadeSelect.classList.add('input-invalido');
-                valido = false;
-            }
-
-            if (!valido) {
+            if (!(tituloOk && prioridadeOk && prazoOk)) {
                 event.preventDefault();
             }
         });

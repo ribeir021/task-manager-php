@@ -9,7 +9,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $status = $_POST['status'];
     $prazo = $_POST['prazo'];
 
-    try {
+    // Validação no servidor (caso o JavaScript esteja desligado ou seja burlado)
+    if (trim($titulo) === '' || $prazo === '') {
+        echo "<script>alert('Preencha o título e o prazo da tarefa.');</script>";
+    } else {
+      try {
         // Insere os dados da nova tarefa no banco de dados com segurança
         $sql = "INSERT INTO tarefas (titulo, descricao, prioridade, status, prazo) VALUES (:titulo, :descricao, :prioridade, :status, :prazo)";
         $stmt = $conexao->prepare($sql);
@@ -28,6 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
     } catch (PDOException $erro) {
         echo "<script>alert('Erro ao cadastrar tarefa.');</script>";
+      }
     }
 }
 ?>
@@ -93,8 +98,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
 
                 <div class="campo-grupo">
-                    <label for="prazo">Data de Prazo</label>
+                    <label for="prazo">Data de Prazo *</label>
                     <input type="date" id="prazo" name="prazo">
+                    <span class="msg-erro" id="erro-prazo"></span>
                 </div>
 
                 <div class="botoes-form">

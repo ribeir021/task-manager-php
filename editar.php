@@ -3,14 +3,20 @@ require 'conexao.php';
 
 // Atualiza os dados quando o formulário é enviado
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $id = $_POST['id'];
+    $id = (int) $_POST['id'];
     $titulo = $_POST['titulo'];
     $descricao = $_POST['descricao'];
     $prioridade = $_POST['prioridade'];
     $status = $_POST['status'];
     $prazo = $_POST['prazo'];
 
-    try {
+    // Validação no servidor (caso o JavaScript esteja desligado ou seja burlado)
+    if (trim($titulo) === '' || $prazo === '') {
+        echo "<script>alert('Preencha o título e o prazo da tarefa.');</script>";
+        $tarefa = ['id' => $id, 'titulo' => $titulo, 'descricao' => $descricao,
+                   'prioridade' => $prioridade, 'status' => $status, 'prazo' => $prazo];
+    } else {
+      try {
         $sql = "UPDATE tarefas SET titulo = :titulo, descricao = :descricao, prioridade = :prioridade, prazo = :prazo, status = :status WHERE id = :id";
         $stmt = $conexao->prepare($sql);
         
@@ -27,11 +33,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     } catch (PDOException $erro) {
         echo "<script>alert('Erro ao atualizar tarefa.');</script>";
+      }
     }
 } 
 // Carrega os dados da tarefa selecionada ao abrir a página
 else {
-    $id_url = $_GET['id'];
+    $id_url = (int) ($_GET['id'] ?? 0);
     try {
         $sql = "SELECT * FROM tarefas WHERE id = :id";
         $stmt = $conexao->prepare($sql);
@@ -40,6 +47,11 @@ else {
         $tarefa = $stmt->fetch(PDO::FETCH_ASSOC);
     } catch (PDOException $erro) {
         echo "Erro ao buscar tarefa.";
+    }
+    // id inexistente: volta para a lista em vez de mostrar formulário vazio
+    if (!$tarefa) {
+        header("Location: index.php");
+        exit;
     }
 }
 ?>
@@ -69,16 +81,17 @@ else {
         <div class="caixa-form">
             <form action="editar.php" method="POST" id="form-cadastro" novalidate>
                 
-                <input type="hidden" name="id" value="<?php echo $tarefa['id']; ?>">
+                <input type="hidden" name="id" value="<?php echo (int) $tarefa['id']; ?>">
 
                 <div class="campo-grupo">
                     <label for="titulo">Título da Tarefa *</label>
-                    <input type="text" id="titulo" name="titulo" value="<?php echo $tarefa['titulo']; ?>" required>
+                    <input type="text" id="titulo" name="titulo" value="<?php echo htmlspecialchars($tarefa['titulo'], ENT_QUOTES, 'UTF-8'); ?>" required>
+                    <span class="msg-erro" id="erro-titulo"></span>
                 </div>
 
                 <div class="campo-grupo">
                     <label for="descricao">Descrição</label>
-                    <textarea id="descricao" name="descricao" rows="4" maxlength="500"><?php echo $tarefa['descricao']; ?></textarea>
+                    <textarea id="descricao" name="descricao" rows="4" maxlength="500"><?php echo htmlspecialchars($tarefa['descricao'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                 </div>
 
                 <div class="grid-form-2col">
@@ -89,6 +102,7 @@ else {
                             <option value="Média" <?php echo ($tarefa['prioridade'] == 'Média') ? 'selected' : ''; ?>>Média</option>
                             <option value="Alta" <?php echo ($tarefa['prioridade'] == 'Alta') ? 'selected' : ''; ?>>Alta</option>
                         </select>
+                        <span class="msg-erro" id="erro-prioridade"></span>
                     </div>
 
                     <div class="campo-grupo">
@@ -102,8 +116,9 @@ else {
                 </div>
 
                 <div class="campo-grupo">
-                    <label for="prazo">Data de Prazo</label>
-                    <input type="date" id="prazo" name="prazo" value="<?php echo $tarefa['prazo']; ?>" required>
+                    <label for="prazo">Data de Prazo *</label>
+                    <input type="date" id="prazo" name="prazo" value="<?php echo htmlspecialchars($tarefa['prazo'], ENT_QUOTES, 'UTF-8'); ?>" required>
+                    <span class="msg-erro" id="erro-prazo"></span>
                 </div>
 
                 <div class="botoes-form">

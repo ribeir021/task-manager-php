@@ -42,6 +42,8 @@ try {
     }
 } catch (PDOException $erro) {
     echo "Erro ao buscar tarefas: " . $erro->getMessage();
+    $lista_tarefas = [];
+    $total = $pendentes = $em_andamento = $concluidas = 0;
 }
 ?>
 
@@ -91,7 +93,7 @@ try {
                 <div class="campo-grupo">
                     <label for="filtro-busca">Buscar pelo título</label>
                     <input type="text" id="filtro-busca" name="busca" placeholder="Digite para filtrar a lista..." 
-                           value="<?php echo isset($_GET['busca']) ? $_GET['busca'] : ''; ?>">
+                           value="<?php echo isset($_GET['busca']) ? htmlspecialchars($_GET['busca'], ENT_QUOTES, 'UTF-8') : ''; ?>">
                 </div>
                 
                 <div class="campo-grupo">
@@ -150,26 +152,26 @@ try {
 
                             <tr>
                                 <td class="coluna-titulo">
-                                    <strong><?php echo $tarefa['titulo']; ?></strong>
+                                    <strong><?php echo htmlspecialchars($tarefa['titulo'], ENT_QUOTES, 'UTF-8'); ?></strong>
                                 </td>
                                 
                                 <td>
                                     <span class="tag <?php echo $classe_prioridade; ?>">
-                                        <?php echo $tarefa['prioridade']; ?>
+                                        <?php echo htmlspecialchars($tarefa['prioridade'], ENT_QUOTES, 'UTF-8'); ?>
                                     </span>
                                 </td>
                                 
                                 <td>
                                     <span class="tag <?php echo $classe_status; ?>">
-                                        <?php echo $tarefa['status']; ?>
+                                        <?php echo htmlspecialchars($tarefa['status'], ENT_QUOTES, 'UTF-8'); ?>
                                     </span>
                                 </td>
                                 
                                 <td><?php echo $data_formatada; ?></td>
                                 
                                 <td>
-                                    <a href="editar.php?id=<?php echo $tarefa['id']; ?>" class="btn-acao btn-editar">Editar</a>
-                                    <a href="excluir.php?id=<?php echo $tarefa['id']; ?>" class="btn-acao btn-excluir">Excluir</a>
+                                    <a href="editar.php?id=<?php echo (int) $tarefa['id']; ?>" class="btn-acao btn-editar">Editar</a>
+                                    <a href="excluir.php?id=<?php echo (int) $tarefa['id']; ?>" class="btn-acao btn-excluir">Excluir</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
