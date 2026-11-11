@@ -1,37 +1,35 @@
 <?php
 require 'conexao.php';
 
-// PARTE 1: SALVAR AS ALTERAÇÕES (POST)
+// Atualiza os dados quando o formulário é enviado
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $id_form = $_POST['id'];
-    $titulo_form = $_POST['titulo'];
-    $descricao_form = $_POST['descricao'];
-    $prioridade_form = $_POST['prioridade'];
-    $status_form = $_POST['status'];
-    $prazo_form = $_POST['prazo'];
+    $id = $_POST['id'];
+    $titulo = $_POST['titulo'];
+    $descricao = $_POST['descricao'];
+    $prioridade = $_POST['prioridade'];
+    $status = $_POST['status'];
+    $prazo = $_POST['prazo'];
 
     try {
-        // UPDATE atualizado com a coluna descrição nova
         $sql = "UPDATE tarefas SET titulo = :titulo, descricao = :descricao, prioridade = :prioridade, prazo = :prazo, status = :status WHERE id = :id";
         $stmt = $conexao->prepare($sql);
         
-        $stmt->bindParam(':titulo', $titulo_form);
-        $stmt->bindParam(':descricao', $descricao_form);
-        $stmt->bindParam(':prioridade', $prioridade_form);
-        $stmt->bindParam(':prazo', $prazo_form);
-        $stmt->bindParam(':status', $status_form);
-        $stmt->bindParam(':id', $id_form);
+        $stmt->bindParam(':titulo', $titulo);
+        $stmt->bindParam(':descricao', $descricao);
+        $stmt->bindParam(':prioridade', $prioridade);
+        $stmt->bindParam(':prazo', $prazo);
+        $stmt->bindParam(':status', $status);
+        $stmt->bindParam(':id', $id);
         
         $stmt->execute();
         
-        // Redireciona de volta para a tela inicial
         header("Location: index.php");
         exit;
     } catch (PDOException $erro) {
-        echo "<script>alert('Erro ao atualizar: " . $erro->getMessage() . "');</script>";
+        echo "<script>alert('Erro ao atualizar tarefa.');</script>";
     }
 } 
-// PARTE 2: CARREGAR A TAREFA (GET)
+// Carrega os dados da tarefa selecionada ao abrir a página
 else {
     $id_url = $_GET['id'];
     try {
@@ -41,7 +39,7 @@ else {
         $stmt->execute();
         $tarefa = $stmt->fetch(PDO::FETCH_ASSOC);
     } catch (PDOException $erro) {
-        echo "Erro ao buscar a tarefa: " . $erro->getMessage();
+        echo "Erro ao buscar tarefa.";
     }
 }
 ?>
@@ -69,10 +67,8 @@ else {
         <h1 class="titulo-pagina">Editar Tarefa</h1>
 
         <div class="caixa-form">
-            <!-- Action aponta para o próprio editar.php -->
             <form action="editar.php" method="POST" id="form-cadastro" novalidate>
                 
-                <!-- O campo ID oculto é essencial para o UPDATE saber qual tarefa alterar -->
                 <input type="hidden" name="id" value="<?php echo $tarefa['id']; ?>">
 
                 <div class="campo-grupo">
@@ -82,7 +78,6 @@ else {
 
                 <div class="campo-grupo">
                     <label for="descricao">Descrição</label>
-                    <!-- Em textarea o valor vai no meio das tags -->
                     <textarea id="descricao" name="descricao" rows="4" maxlength="500"><?php echo $tarefa['descricao']; ?></textarea>
                 </div>
 
@@ -90,7 +85,6 @@ else {
                     <div class="campo-grupo">
                         <label for="prioridade">Prioridade *</label>
                         <select id="prioridade" name="prioridade" required>
-                            <!-- O PHP verifica qual era a prioridade no banco e coloca 'selected' nela -->
                             <option value="Baixa" <?php echo ($tarefa['prioridade'] == 'Baixa') ? 'selected' : ''; ?>>Baixa</option>
                             <option value="Média" <?php echo ($tarefa['prioridade'] == 'Média') ? 'selected' : ''; ?>>Média</option>
                             <option value="Alta" <?php echo ($tarefa['prioridade'] == 'Alta') ? 'selected' : ''; ?>>Alta</option>

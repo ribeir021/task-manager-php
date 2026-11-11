@@ -2,19 +2,35 @@
 require 'conexao.php';
 
 try {
-    $sql = "SELECT * FROM tarefas";
+    // Configuração da consulta com filtros dinâmicos via URL
+    $sql = "SELECT * FROM tarefas WHERE 1=1";
+    $parametros = [];
+
+    if (!empty($_GET['busca'])) {
+        $sql .= " AND titulo LIKE :busca";
+        $parametros[':busca'] = '%' . $_GET['busca'] . '%';
+    }
+
+    if (!empty($_GET['status'])) {
+        $sql .= " AND status = :status";
+        $parametros[':status'] = $_GET['status'];
+    }
+
+    if (!empty($_GET['prioridade'])) {
+        $sql .= " AND prioridade = :prioridade";
+        $parametros[':prioridade'] = $_GET['prioridade'];
+    }
+
     $stmt = $conexao->prepare($sql);
-    $stmt->execute();
+    $stmt->execute($parametros);
     $lista_tarefas = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    // Conta o total de itens no array
-    $total = count($lista_tarefas);
     
-    // Contadores zerados
+    // Contadores para o painel de resumo
+    $total = count($lista_tarefas);
     $pendentes = 0;
     $em_andamento = 0;
     $concluidas = 0;
 
-    // Passa por cada tarefa somando nos contadores certos
     foreach ($lista_tarefas as $t) {
         if ($t['status'] == 'Pendente') {
             $pendentes++;
@@ -51,7 +67,6 @@ try {
     <main class="container">
         <h1 class="titulo-pagina">Minhas tarefas</h1>
 
-        <!-- Cards de Resumo -->
         <div class="cards-grid">
             <div class="card">
                 <span class="numero" id="card-total"><?php echo $total; ?></span>
@@ -71,31 +86,34 @@ try {
             </div>
         </div>
 
-        <!-- Barra de Filtros -->
         <div class="caixa-filtro">
             <form action="index.php" method="GET" class="form-filtro" id="form-filtro">
                 <div class="campo-grupo">
                     <label for="filtro-busca">Buscar pelo título</label>
-                    <input type="text" id="filtro-busca" name="busca" placeholder="Digite para filtrar a lista...">
+                    <input type="text" id="filtro-busca" name="busca" placeholder="Digite para filtrar a lista..." 
+                           value="<?php echo isset($_GET['busca']) ? $_GET['busca'] : ''; ?>">
                 </div>
+                
                 <div class="campo-grupo">
                     <label for="filtro-status">Status</label>
                     <select id="filtro-status" name="status">
                         <option value="">Todos</option>
-                        <option value="Pendente">Pendente</option>
-                        <option value="Em andamento">Em andamento</option>
-                        <option value="Concluído">Concluído</option>
+                        <option value="Pendente" <?php echo (isset($_GET['status']) && $_GET['status'] == 'Pendente') ? 'selected' : ''; ?>>Pendente</option>
+                        <option value="Em andamento" <?php echo (isset($_GET['status']) && $_GET['status'] == 'Em andamento') ? 'selected' : ''; ?>>Em andamento</option>
+                        <option value="Concluído" <?php echo (isset($_GET['status']) && $_GET['status'] == 'Concluído') ? 'selected' : ''; ?>>Concluído</option>
                     </select>
                 </div>
+                
                 <div class="campo-grupo">
                     <label for="filtro-prioridade">Prioridade</label>
                     <select id="filtro-prioridade" name="prioridade">
                         <option value="">Todas</option>
-                        <option value="Baixa">Baixa</option>
-                        <option value="Média">Média</option>
-                        <option value="Alta">Alta</option>
+                        <option value="Baixa" <?php echo (isset($_GET['prioridade']) && $_GET['prioridade'] == 'Baixa') ? 'selected' : ''; ?>>Baixa</option>
+                        <option value="Média" <?php echo (isset($_GET['prioridade']) && $_GET['prioridade'] == 'Média') ? 'selected' : ''; ?>>Média</option>
+                        <option value="Alta" <?php echo (isset($_GET['prioridade']) && $_GET['prioridade'] == 'Alta') ? 'selected' : ''; ?>>Alta</option>
                     </select>
                 </div>
+                
                 <div class="botoes-filtro">
                     <button type="submit" class="btn-filtrar">Filtrar</button>
                     <a href="index.php" class="btn-limpar">Limpar</a>
@@ -103,7 +121,6 @@ try {
             </form>
         </div>
 
-        <!-- Tabela de Listagem -->
         <section class="tabela-container">
             <table class="tabela-tarefas" id="tabela-tarefas">
                 <thead>
@@ -126,10 +143,8 @@ try {
                         <?php foreach ($lista_tarefas as $tarefa): ?>
                             
                             <?php 
-                            // Tratando os textos para encaixar perfeitamente nas classes CSS do frontend dela
                             $classe_prioridade = "prioridade-" . str_replace('é', 'e', strtolower($tarefa['prioridade']));
                             $classe_status = "status-" . str_replace(' ', '_', strtolower($tarefa['status']));
-                            // Convertendo a data do banco (Y-m-d) para o formato brasileiro (d/m/Y)
                             $data_formatada = date('d/m/Y', strtotime($tarefa['prazo']));
                             ?>
 
@@ -153,7 +168,6 @@ try {
                                 <td><?php echo $data_formatada; ?></td>
                                 
                                 <td>
-                                    <!-- Os seus botões com os IDs dinâmicos, mas usando as classes bonitas dela -->
                                     <a href="editar.php?id=<?php echo $tarefa['id']; ?>" class="btn-acao btn-editar">Editar</a>
                                     <a href="excluir.php?id=<?php echo $tarefa['id']; ?>" class="btn-acao btn-excluir">Excluir</a>
                                 </td>

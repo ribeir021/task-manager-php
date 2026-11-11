@@ -1,34 +1,33 @@
 <?php
 require 'conexao.php';
 
+// Verifica se o formulário foi enviado via POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    
-    // Pegando os dados do formulário novo
-    $titulo_form = $_POST['titulo'];
-    $descricao_form = $_POST['descricao'];
-    $prioridade_form = $_POST['prioridade'];
-    $status_form = $_POST['status'];
-    $prazo_form = $_POST['prazo'];
+    $titulo = $_POST['titulo'];
+    $descricao = $_POST['descricao'];
+    $prioridade = $_POST['prioridade'];
+    $status = $_POST['status'];
+    $prazo = $_POST['prazo'];
 
     try {
-        // Comando INSERT atualizado com todas as colunas do novo formulário
+        // Insere os dados da nova tarefa no banco de dados com segurança
         $sql = "INSERT INTO tarefas (titulo, descricao, prioridade, status, prazo) VALUES (:titulo, :descricao, :prioridade, :status, :prazo)";
         $stmt = $conexao->prepare($sql);
         
-        $stmt->bindParam(':titulo', $titulo_form);
-        $stmt->bindParam(':descricao', $descricao_form);
-        $stmt->bindParam(':prioridade', $prioridade_form);
-        $stmt->bindParam(':status', $status_form);
-        $stmt->bindParam(':prazo', $prazo_form);
+        $stmt->bindParam(':titulo', $titulo);
+        $stmt->bindParam(':descricao', $descricao);
+        $stmt->bindParam(':prioridade', $prioridade);
+        $stmt->bindParam(':status', $status);
+        $stmt->bindParam(':prazo', $prazo);
         
         $stmt->execute();
         
-        // Redireciona para a tela inicial logo após salvar
+        // Redireciona de volta para a página inicial
         header("Location: index.php");
         exit;
         
     } catch (PDOException $erro) {
-        echo "<script>alert('Erro ao cadastrar: " . $erro->getMessage() . "');</script>";
+        echo "<script>alert('Erro ao cadastrar tarefa.');</script>";
     }
 }
 ?>
