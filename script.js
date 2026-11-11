@@ -83,8 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         campoBusca.addEventListener('input', filtrarTabela);
-        selectStatus.addEventListener('change', filtrarTabela);
-        selectPrioridade.addEventListener('change', filtrarTabela);
     }
 
     // Confirmação de Exclusão
