@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Contador de Caracteres na Descrição
+    // Contador de Caracteres na Descrição
     const descArea = document.getElementById('descricao');
     const contadorChars = document.getElementById('contador-chars');
 
@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 2. Validação do Formulário de Cadastro
+    // Validação do Formulário de Cadastro
     const formCadastro = document.getElementById('form-cadastro');
     if (formCadastro) {
         formCadastro.addEventListener('submit', (event) => {
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 3. Filtro Dinâmico Client-Side na Tabela
+    // Filtro Dinâmico Client-Side na Tabela
     const campoBusca = document.getElementById('filtro-busca');
     const selectStatus = document.getElementById('filtro-status');
     const selectPrioridade = document.getElementById('filtro-prioridade');
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         selectPrioridade.addEventListener('change', filtrarTabela);
     }
 
-    // 4. Confirmação de Exclusão
+    // Confirmação de Exclusão
     document.addEventListener('click', (event) => {
         if (event.target.classList.contains('btn-excluir')) {
             const confirmacao = confirm('Tem certeza de que deseja excluir esta tarefa?');
