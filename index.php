@@ -100,7 +100,7 @@ try {
                         <option value="">Todos</option>
                         <option value="Pendente" <?php echo (isset($_GET['status']) && $_GET['status'] == 'Pendente') ? 'selected' : ''; ?>>Pendente</option>
                         <option value="Em andamento" <?php echo (isset($_GET['status']) && $_GET['status'] == 'Em andamento') ? 'selected' : ''; ?>>Em andamento</option>
-                        <option value="Concluído" <?php echo (isset($_GET['status']) && $_GET['status'] == 'Concluído') ? 'selected' : ''; ?>>Concluído</option>
+                        <option value="Concluída" <?php echo (isset($_GET['status']) && $_GET['status'] == 'Concluída') ? 'selected' : ''; ?>>Concluída</option>
                     </select>
                 </div>
                 

@@ -3,7 +3,7 @@ CREATE DATABASE IF NOT EXISTS gerenciador_tarefas;
 USE gerenciador_tarefas;
 
 -- Tabela principal para armazenamento das tarefas
-CREATE TABLE tarefas {
+CREATE TABLE IF NOT EXISTS tarefas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(255) NOT NULL,
     descricao TEXT,
@@ -11,4 +11,4 @@ CREATE TABLE tarefas {
     prazo DATE NOT NULL,
     status ENUM('Pendente', 'Em andamento', 'Concluída') DEFAULT 'Pendente',
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-};
+);
