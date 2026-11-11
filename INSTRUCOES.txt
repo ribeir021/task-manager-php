@@ -1,0 +1,107 @@
+========================================================================
+ COMO RODAR O GERENCIADOR DE TAREFAS
+ Disciplina: ARA0062 - Desenvolvimento Web em HTML5, CSS, JavaScript e PHP
+ Semestre: 2026.2
+========================================================================
+
+O sistema precisa de um servidor local com Apache, PHP e MySQL. O jeito
+mais facil e instalar o XAMPP (https://www.apachefriends.org), que ja
+traz tudo isso, inclusive o phpMyAdmin. WAMP e Laragon tambem servem.
+
+Requisitos:
+- Apache com PHP 7.4 ou superior (testamos com PHP 8)
+- MySQL ou MariaDB
+- Um navegador atualizado
+
+
+------------------------------------------------------------------------
+PASSO 1 - Colocar o projeto no servidor
+------------------------------------------------------------------------
+Copie a pasta "task-manager-php" (a pasta inteira) para dentro da pasta
+publica do servidor:
+
+  XAMPP no Windows:  C:\xampp\htdocs\task-manager-php
+  XAMPP no Linux:    /opt/lampp/htdocs/task-manager-php
+  WAMP:              C:\wamp64\www\task-manager-php
+
+No Linux, para conseguir editar os arquivos sem pedir senha, rode:
+  sudo chown -R $USER /opt/lampp/htdocs/task-manager-php
+
+
+------------------------------------------------------------------------
+PASSO 2 - Ligar o Apache e o MySQL
+------------------------------------------------------------------------
+Windows: abra o XAMPP Control Panel e clique em "Start" no Apache e no
+MySQL. Os dois ficam com fundo verde quando estao funcionando.
+
+Linux: no terminal, rode
+  sudo /opt/lampp/lampp start
+
+Se o Apache nao subir, quase sempre a porta 80 esta ocupada por outro
+programa. Nesse caso feche o outro programa ou troque a porta do Apache
+para 8080 (e depois use http://localhost:8080/... no Passo 4).
+
+
+------------------------------------------------------------------------
+PASSO 3 - Criar o banco de dados
+------------------------------------------------------------------------
+1. No navegador, abra http://localhost/phpmyadmin
+2. Clique na aba "Importar".
+3. Em "Escolher arquivo", selecione o arquivo banco.sql que esta na
+   pasta do projeto.
+4. Clique em "Importar" (botao no fim da pagina).
+
+Isso cria o banco "gerenciador_tarefas" e a tabela "tarefas". O banco
+comeca vazio: as tarefas aparecem conforme voce for cadastrando.
+
+Alternativa pelo terminal (Linux, XAMPP):
+  sudo /opt/lampp/bin/mysql -u root < banco.sql
+
+
+------------------------------------------------------------------------
+PASSO 4 - Abrir o sistema
+------------------------------------------------------------------------
+No navegador, acesse:
+
+  http://localhost/task-manager-php/
+
+Importante: use sempre o endereco http://localhost/... Se abrir o
+arquivo direto pelo navegador (file:///...), o PHP nao executa.
+
+
+------------------------------------------------------------------------
+SE O SEU MYSQL TIVER SENHA (so se necessario)
+------------------------------------------------------------------------
+Por padrao o XAMPP usa o usuario "root" sem senha, e o projeto ja vem
+configurado assim. Se o seu MySQL for diferente, abra o arquivo
+conexao.php e ajuste estas linhas:
+
+  $servidor = "localhost";
+  $banco    = "gerenciador_tarefas";
+  $usuario  = "root";
+  $senha    = "";          <- coloque sua senha aqui, se houver
+
+
+------------------------------------------------------------------------
+PROBLEMAS COMUNS
+------------------------------------------------------------------------
+- "Erro na conexao": o MySQL nao esta ligado, ou o banco.sql ainda nao
+  foi importado (Passo 3).
+- Pagina em branco ou codigo PHP aparecendo na tela: o endereco nao
+  comeca com http://localhost/ (veja o Passo 4).
+- Ao salvar uma tarefa nada acontece: confira se o banco foi importado
+  com o banco.sql que esta nesta pasta.
+
+
+------------------------------------------------------------------------
+ARQUIVOS DO PROJETO
+------------------------------------------------------------------------
+banco.sql       cria o banco e a tabela
+conexao.php     conexao com o MySQL (PDO)
+index.php       lista as tarefas, mostra os totais e aplica os filtros
+cadastrar.php   formulario e gravacao de nova tarefa
+editar.php      formulario e atualizacao de tarefa
+excluir.php     exclusao de tarefa
+style.css       aparencia do sistema
+script.js       validacao, contador, busca na tabela e confirmacao
+========================================================================
